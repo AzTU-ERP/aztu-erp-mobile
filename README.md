@@ -1,56 +1,64 @@
-# Welcome to your Expo app 👋
+# AzTU ERP — Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Mobile companion for **erp.aztu.edu.az**, built with **Expo (SDK 57) + expo-router + TypeScript**.
+It re-imagines the AzTU ERP admin dashboard (LMS, Finance/Payroll, HR, Library, Turnstile,
+Security) as a modern native app with AzTU navy branding and a custom floating bottom navigation.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run it
 
 ```bash
-npm run reset-project
+cd aztu-erp-mobile
+pnpm start          # then press i (iOS), a (Android), or scan the QR in Expo Go
+# or
+pnpm ios
+pnpm android
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## What's inside
 
-### Other setup steps
+**Bottom navigation** (custom, animated — `src/components/tab-bar.tsx`):
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+| Tab | Screen | Mirrors ERP module |
+| --- | --- | --- |
+| Əsas | Dashboard | Ana səhifə |
+| Təhsil | LMS hub | LMS |
+| Maliyyə | Finance hub | Finance / Payroll |
+| Bildiriş | Notifications | Mesajlar / Notifications |
+| Profil | Profile | Profil |
 
-## Learn more
+**Detail screens** pushed from the tabs:
 
-To learn more about developing your project with Expo, look at the following resources:
+- LMS → `Davamiyyət` (attendance with QR / face check-in), `Transkript` (GPA + grades),
+  `Fənlər` (courses), `İmtahanlar` (exams)
+- Finance → `Maaş vərəqi` (payslip), `Maaş hesablamaları` (payroll runs), `Premyalar` (bonuses)
+- `Təhlükəsizlik` (sessions + trusted devices), `Parametrlər` (settings)
+- Generic module screen (`/module/[slug]`) covering `HR`, `Kitabxana`, `Turnstile`, `İxraclar`
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+All copy is in Azerbaijani and the data shapes in `src/data/index.ts` mirror the web ERP domain
+(attendance statuses, payroll run statuses, transcript grading), so swapping the mock data for the
+real AzTU SSO/ERP API is a drop-in change.
 
-## Join the community
+## Architecture
 
-Join our community of developers creating universal apps.
+```
+src/
+  app/                 # expo-router file-based routes
+    _layout.tsx        # root Stack (tabs + pushed detail screens)
+    (tabs)/            # 5 tab roots + custom tab bar layout
+    lms/  finance/  module/[slug].tsx  security.tsx  settings.tsx
+  components/
+    tab-bar.tsx        # custom animated floating bottom navigation
+    layout.tsx         # Screen / Hero / PageHeader scaffolding
+    ui.tsx             # Card, Badge, ListRow, ProgressBar, Button, Avatar, IconChip…
+  data/index.ts        # typed mock data (LMS, Finance, security, notifications)
+  theme/index.ts       # AzTU design system (navy palette, spacing, radius, shadows)
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Design system
+
+Built around the AzTU navy shield (`#1B2559`) with an indigo interaction accent and a gold
+highlight. Gradient heroes, soft layered shadows, rounded cards, and a floating tab bar with an
+animated active pill give it a modern first-view feel. See `src/theme/index.ts`.
+
+> Data is mocked for demonstration. Point `src/data` at the real backend (the web ERP uses the
+> AzTU auth/SSO API wrapping `{ success, data, error }`) to make it live.
