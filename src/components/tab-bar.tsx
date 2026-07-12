@@ -79,7 +79,8 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
 
   const rt = roleTabs[role];
   const TABS: Record<string, TabMeta> = {
-    index: { label: 'Əsas', icon: 'grid-outline', iconActive: 'grid' },
+    index: { label: 'Əsas', icon: 'home-outline', iconActive: 'home' },
+    services: { label: 'Xidmətlər', icon: 'grid-outline', iconActive: 'grid' },
     lms: { label: rt.lms.label, icon: rt.lms.icon as IconName, iconActive: rt.lms.iconActive as IconName },
     finance: { label: rt.finance.label, icon: rt.finance.icon as IconName, iconActive: rt.finance.iconActive as IconName },
     messages: { label: 'Mesajlar', icon: 'chatbubbles-outline', iconActive: 'chatbubbles' },
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.xl + 4,
     paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: spacing.xs,
     width: '100%',
     borderWidth: 1,
     borderColor: 'rgba(27,37,89,0.06)',
@@ -131,13 +132,13 @@ const styles = StyleSheet.create({
   },
   item: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   activeIcon: {
-    width: 46,
-    height: 46,
+    width: 42,
+    height: 42,
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadow.soft,
   },
-  inactiveIcon: { width: 46, height: 46, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
-  label: { ...typography.caption, marginTop: 2 },
+  inactiveIcon: { width: 42, height: 42, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
+  label: { ...typography.caption, fontSize: 10.5, letterSpacing: 0, marginTop: 3 },
 });
