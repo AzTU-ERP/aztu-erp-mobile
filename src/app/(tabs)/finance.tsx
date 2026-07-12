@@ -193,7 +193,7 @@ function FinanceAdmin() {
         <View style={styles.linkGrid}>
           {[
             { key: 'runs', label: 'Hesablamalar', icon: 'calculator', tint: '#0EA5E9', bg: '#E0F2FE', route: '/finance/runs' },
-            { key: 'employees', label: 'Əməkdaşlar', icon: 'people', tint: '#3D4ED6', bg: '#E5E8FF', route: '/module/hr' },
+            { key: 'employees', label: 'Əməkdaşlar', icon: 'people', tint: '#3D4ED6', bg: '#E5E8FF', route: '/hr/employees' },
             { key: 'bonuses', label: 'Premyalar', icon: 'gift', tint: '#7C3AED', bg: '#EDE9FE', route: '/finance/bonuses' },
             { key: 'exports', label: 'İxraclar', icon: 'download', tint: '#0E9F6E', bg: '#DEF7EC', route: '/module/exports' },
           ].map((l) => (

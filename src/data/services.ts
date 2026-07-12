@@ -42,7 +42,7 @@ export const serviceGroups: ServiceGroup[] = [
     key: 'admin',
     title: 'İdarəetmə',
     items: [
-      { key: 'hr', title: 'İnsan resursları', subtitle: 'Əməkdaşlar, məzuniyyət', icon: 'people', grad: ['#232F73', '#3D4ED6'], wash: '#E5E8FF', route: '/module/hr' },
+      { key: 'hr', title: 'İnsan resursları', subtitle: 'Vakansiya, müraciət, kadr', icon: 'people', grad: ['#232F73', '#3D4ED6'], wash: '#E5E8FF', route: '/hr' },
       { key: 'library', title: 'Kitabxana', subtitle: 'Kataloq və icarələr', icon: 'library', grad: ['#7C3AED', '#9F7AEA'], wash: '#EDE9FE', route: '/module/library' },
       { key: 'turnstile', title: 'Keçid nəzarəti', subtitle: 'Turniket jurnalı', icon: 'scan', grad: ['#E02424', '#F05252'], wash: '#FDE8E8', route: '/module/turnstile' },
       { key: 'exports', title: 'Hesabatlar', subtitle: 'İxrac və sənədlər', icon: 'bar-chart', grad: ['#0E9F6E', '#31C48D'], wash: '#DEF7EC', route: '/module/exports' },

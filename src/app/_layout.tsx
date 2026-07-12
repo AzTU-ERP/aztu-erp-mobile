@@ -25,6 +25,15 @@ export default function RootLayout() {
             <Stack.Screen name="security" options={{ animation: 'slide_from_right' }} />
             <Stack.Screen name="settings" options={{ animation: 'slide_from_right' }} />
             <Stack.Screen name="module/[slug]" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="hr/index" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="hr/vacancies/index" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="hr/vacancies/[id]" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="hr/applications/index" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="hr/applications/[id]" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="hr/employees/index" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="hr/employees/[id]" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="hr/templates/index" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="hr/emails/index" options={{ animation: 'slide_from_right' }} />
           </Stack>
         </RoleProvider>
       </SafeAreaProvider>
