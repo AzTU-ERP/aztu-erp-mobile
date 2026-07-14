@@ -7,11 +7,22 @@ import { Hero, Screen } from '@/components/layout';
 import { Badge, Button, Card, IconChip, ProgressBar, SectionHeader } from '@/components/ui';
 import { useRole } from '@/context/role';
 import { AZN, bonuses, payrollRuns, payslip, reminders, runStatusMeta } from '@/data';
+import {
+  appStatusMeta,
+  applications,
+  fullName,
+  hrStats,
+  initialsOf,
+  jobTypeLabel,
+  vacancies,
+  vacancyStatusMeta,
+} from '@/data/hr';
 import { myPayments, tuition } from '@/data/roles';
 import { colors, gradients, radius, shadow, spacing, typography } from '@/theme';
 
 export default function FinanceHub() {
   const { role } = useRole();
+  if (role === 'hr') return <HrRecruitment />;
   if (role === 'student') return <StudentTuition />;
   if (role === 'finance') return <FinanceAdmin />;
   return <TeacherSalary />;
@@ -275,6 +286,111 @@ function FinanceAdmin() {
   );
 }
 
+// ── HR role: recruitment (vacancies + applications) ──────────────────────────
+function HrRecruitment() {
+  const router = useRouter();
+  const openVacancies = vacancies.filter((v) => v.status === 'open');
+  const recentApps = applications.slice(0, 3);
+
+  return (
+    <Screen>
+      <Hero>
+        <Text style={styles.eyebrow}>İŞƏ QƏBUL · RECRUITMENT</Text>
+        <Text style={styles.title}>İşə qəbul</Text>
+      </Hero>
+
+      <View style={styles.section}>
+        <Pressable onPress={() => router.push('/hr/vacancies')}>
+          <LinearGradient
+            colors={gradients.brand as unknown as [string, string, string]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.balanceCard, { marginTop: -spacing.xxxl }]}>
+            <View style={styles.balanceTop}>
+              <Text style={styles.balanceLabel}>Açıq vakansiyalar</Text>
+              <Ionicons name="chevron-forward" size={18} color="rgba(255,255,255,0.9)" />
+            </View>
+            <Text style={styles.balanceValue}>{hrStats.openVacancies}</Text>
+            <View style={styles.balanceRow}>
+              <Badge label={`${hrStats.applications} müraciət`} color="#1B2559" bg="rgba(255,255,255,0.7)" icon="documents" />
+              <Text style={styles.balanceSmallLabel}>{hrStats.onboarding} qəbul prosesində</Text>
+            </View>
+          </LinearGradient>
+        </Pressable>
+
+        <View style={styles.linkGrid}>
+          {[
+            { key: 'vacancies', label: 'Vakansiyalar', icon: 'briefcase', tint: '#E02424', bg: '#FDE8E8', route: '/hr/vacancies' },
+            { key: 'applications', label: 'Müraciətlər', icon: 'documents', tint: '#3D4ED6', bg: '#E5E8FF', route: '/hr/applications' },
+            { key: 'emails', label: 'E-poçt jurnalı', icon: 'mail', tint: '#0EA5E9', bg: '#E0F2FE', route: '/hr/emails' },
+            { key: 'templates', label: 'Şablonlar', icon: 'copy', tint: '#7C3AED', bg: '#EDE9FE', route: '/hr/templates' },
+          ].map((l) => (
+            <Pressable
+              key={l.key}
+              onPress={() => router.push(l.route as never)}
+              style={({ pressed }) => [styles.linkCard, pressed && styles.pressed]}>
+              <IconChip icon={l.icon as never} color={l.tint} bg={l.bg} size={44} />
+              <Text style={styles.linkLabel}>{l.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <View style={{ marginTop: spacing.xl }}>
+          <SectionHeader title="Açıq vakansiyalar" actionLabel="Hamısı" onAction={() => router.push('/hr/vacancies')} />
+          <Card padded={false} style={{ overflow: 'hidden' }}>
+            {openVacancies.map((v, i) => {
+              const meta = vacancyStatusMeta[v.status];
+              return (
+                <View key={v.id}>
+                  <Pressable
+                    onPress={() => router.push(`/hr/vacancies/${v.id}` as never)}
+                    style={({ pressed }) => [styles.runRow, pressed && { opacity: 0.7 }]}>
+                    <IconChip icon="briefcase" color="#E02424" bg="#FDE8E8" size={38} />
+                    <View style={{ flex: 1, marginLeft: spacing.md }}>
+                      <Text style={styles.runPeriod} numberOfLines={1}>{v.jobTitle}</Text>
+                      <Text style={styles.runMeta} numberOfLines={1}>
+                        {jobTypeLabel[v.jobType]} · {v.applicants} müraciət
+                      </Text>
+                    </View>
+                    <Badge label={meta.label} color={meta.color} bg={meta.bg} />
+                  </Pressable>
+                  {i < openVacancies.length - 1 ? <View style={styles.divider} /> : null}
+                </View>
+              );
+            })}
+          </Card>
+        </View>
+
+        <View style={{ marginTop: spacing.xl }}>
+          <SectionHeader title="Son müraciətlər" actionLabel="Hamısı" onAction={() => router.push('/hr/applications')} />
+          <Card padded={false} style={{ overflow: 'hidden' }}>
+            {recentApps.map((a, i) => {
+              const meta = appStatusMeta[a.status];
+              return (
+                <View key={a.id}>
+                  <Pressable
+                    onPress={() => router.push(`/hr/applications/${a.id}` as never)}
+                    style={({ pressed }) => [styles.runRow, pressed && { opacity: 0.7 }]}>
+                    <View style={[styles.hrAvatar, { backgroundColor: meta.bg }]}>
+                      <Text style={[styles.hrAvatarText, { color: meta.color }]}>{initialsOf(a)}</Text>
+                    </View>
+                    <View style={{ flex: 1, marginLeft: spacing.md }}>
+                      <Text style={styles.runPeriod} numberOfLines={1}>{fullName(a)}</Text>
+                      <Text style={styles.runMeta} numberOfLines={1}>{a.vacancyTitle}</Text>
+                    </View>
+                    <Badge label={meta.label} color={meta.color} bg={meta.bg} />
+                  </Pressable>
+                  {i < recentApps.length - 1 ? <View style={styles.divider} /> : null}
+                </View>
+              );
+            })}
+          </Card>
+        </View>
+      </View>
+    </Screen>
+  );
+}
+
 const styles = StyleSheet.create({
   eyebrow: { ...typography.overline, color: 'rgba(255,255,255,0.7)', marginTop: spacing.sm },
   title: { ...typography.h1, color: '#fff', marginTop: 6, marginBottom: spacing.sm },
@@ -308,6 +424,8 @@ const styles = StyleSheet.create({
   reminderDue: { ...typography.small, color: colors.textMuted, marginTop: 2 },
 
   runRow: { flexDirection: 'row', alignItems: 'center', padding: spacing.md },
+  hrAvatar: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
+  hrAvatarText: { ...typography.bodyStrong },
   runPeriod: { ...typography.bodyStrong, color: colors.text },
   runMeta: { ...typography.small, color: colors.textMuted, marginTop: 2 },
   runTotal: { ...typography.title, color: colors.text },

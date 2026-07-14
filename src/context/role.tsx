@@ -15,7 +15,7 @@ type RoleContextValue = {
 };
 
 const RoleContext = createContext<RoleContextValue | null>(null);
-const ROLES: Role[] = ['student', 'teacher', 'finance'];
+const ROLES: Role[] = ['student', 'teacher', 'finance', 'hr'];
 
 export function RoleProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role>('teacher');

@@ -6,10 +6,12 @@ import { Hero, Screen } from '@/components/layout';
 import { Badge, Card, IconChip, ProgressBar, SectionHeader } from '@/components/ui';
 import { useRole } from '@/context/role';
 import { courses, exams, transcript } from '@/data';
+import { empStatusMeta, employees, fullName, hrStats, initialsOf } from '@/data/hr';
 import { colors, gradients, radius, shadow, spacing, typography } from '@/theme';
 
 export default function LmsHub() {
   const { role } = useRole();
+  if (role === 'hr') return <HrPersonnel />;
   if (role === 'finance') return <AcademicOverview />;
   return <StudentTeacherLms student={role === 'student'} />;
 }
@@ -174,6 +176,79 @@ function AcademicOverview() {
   );
 }
 
+// ── HR role: personnel / employees hub ───────────────────────────────────────
+function HrPersonnel() {
+  const router = useRouter();
+
+  const modules = [
+    { key: 'employees', label: 'İşçilər', desc: 'Kadr uçotu', icon: 'people', tint: '#0E9F6E', bg: '#DEF7EC', route: '/hr/employees' },
+    { key: 'vacancies', label: 'Vakansiyalar', desc: 'Açıq vəzifələr', icon: 'briefcase', tint: '#E02424', bg: '#FDE8E8', route: '/hr/vacancies' },
+    { key: 'applications', label: 'Müraciətlər', desc: 'CV baxışı', icon: 'documents', tint: '#3D4ED6', bg: '#E5E8FF', route: '/hr/applications' },
+    { key: 'panel', label: 'HR paneli', desc: 'Ümumi baxış', icon: 'grid', tint: '#5566F0', bg: '#EEF0FF', route: '/hr' },
+  ];
+  const recent = employees.slice(0, 5);
+
+  return (
+    <Screen>
+      <Hero>
+        <Text style={styles.eyebrow}>KADRLAR · İŞÇİLƏR</Text>
+        <Text style={styles.title}>Kadr idarəetməsi</Text>
+
+        <View style={styles.summary}>
+          <SummaryItem value={`${hrStats.activeEmployees}`} label="Aktiv" />
+          <SummaryDivider />
+          <SummaryItem value={`${hrStats.onboarding}`} label="Qəbulda" />
+          <SummaryDivider />
+          <SummaryItem value={`${hrStats.openVacancies}`} label="Vakansiya" />
+        </View>
+      </Hero>
+
+      <View style={styles.section}>
+        <View style={styles.moduleGrid}>
+          {modules.map((m) => (
+            <Pressable
+              key={m.key}
+              onPress={() => router.push(m.route as never)}
+              style={({ pressed }) => [styles.moduleCard, pressed && styles.pressed]}>
+              <IconChip icon={m.icon as never} color={m.tint} bg={m.bg} size={46} />
+              <Text style={styles.moduleLabel}>{m.label}</Text>
+              <Text style={styles.moduleDesc}>{m.desc}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <SectionHeader title="İşçilər" actionLabel="Hamısı" onAction={() => router.push('/hr/employees')} />
+        <Card padded={false} style={{ overflow: 'hidden' }}>
+          {recent.map((e, i) => {
+            const meta = empStatusMeta[e.status];
+            return (
+              <View key={e.id}>
+                <Pressable
+                  onPress={() => router.push(`/hr/employees/${e.id}` as never)}
+                  style={({ pressed }) => [styles.courseRow, pressed && { opacity: 0.7 }]}>
+                  <View style={[styles.hrAvatar, { backgroundColor: meta.bg }]}>
+                    <Text style={[styles.hrAvatarText, { color: meta.color }]}>{initialsOf(e)}</Text>
+                  </View>
+                  <View style={{ flex: 1, marginLeft: spacing.md }}>
+                    <Text style={styles.courseName} numberOfLines={1}>{fullName(e)}</Text>
+                    <Text style={styles.courseMeta} numberOfLines={1}>
+                      {e.jobTitle} · {e.department}
+                    </Text>
+                  </View>
+                  <Badge label={meta.label} color={meta.color} bg={meta.bg} />
+                </Pressable>
+                {i < recent.length - 1 ? <View style={styles.divider} /> : null}
+              </View>
+            );
+          })}
+        </Card>
+      </View>
+    </Screen>
+  );
+}
+
 // helpers
 function SummaryItem({ value, label }: { value: string; label: string }) {
   return (
@@ -226,6 +301,8 @@ const styles = StyleSheet.create({
 
   courseRow: { flexDirection: 'row', alignItems: 'center', padding: spacing.md },
   courseBar: { width: 4, height: 44, borderRadius: 2, marginRight: spacing.md },
+  hrAvatar: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
+  hrAvatarText: { ...typography.bodyStrong },
   courseName: { ...typography.bodyStrong, color: colors.text },
   courseMeta: { ...typography.small, color: colors.textMuted, marginTop: 2 },
   courseProgress: { marginTop: 8, marginRight: spacing.md },

@@ -1,12 +1,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Role model. The ERP has several user types (student, teacher/staff, finance
-// admin). Switching role re-skins the whole app: identity, dashboard, tab
+// admin, HR). Switching role re-skins the whole app: identity, dashboard, tab
 // labels and the LMS/Finance screens. All copy is Azerbaijani.
 // ─────────────────────────────────────────────────────────────────────────────
 import { gradients } from '@/theme';
 import { QuickAction, Stat } from '@/data';
+import { hrStats } from '@/data/hr';
 
-export type Role = 'student' | 'teacher' | 'finance';
+export type Role = 'student' | 'teacher' | 'finance' | 'hr';
 type Grad = keyof typeof gradients;
 
 export type RoleProfile = {
@@ -55,12 +56,24 @@ export const roleProfiles: Record<Role, RoleProfile> = {
     initials: 'AH',
     gradient: 'gold',
   },
+  hr: {
+    name: 'Səbinə Quliyeva',
+    role: 'Kadrlar şöbəsinin müdiri',
+    org: 'İnsan resursları şöbəsi',
+    faculty: 'İdarəetmə aparatı',
+    idLabel: 'Əməkdaş №',
+    idValue: 'AZTU-0043',
+    email: 'sabina.quliyeva@aztu.edu.az',
+    initials: 'SQ',
+    gradient: 'purple',
+  },
 };
 
 export const roleMeta: Record<Role, { label: string; icon: string }> = {
   student: { label: 'Tələbə', icon: 'school' },
   teacher: { label: 'Müəllim', icon: 'easel' },
   finance: { label: 'Maliyyə', icon: 'briefcase' },
+  hr: { label: 'Kadrlar', icon: 'people' },
 };
 
 // Per-role tab labels/icons for the middle two tabs (lms + finance routes).
@@ -79,6 +92,10 @@ export const roleTabs: Record<
   finance: {
     lms: { label: 'Akademik', icon: 'stats-chart-outline', iconActive: 'stats-chart' },
     finance: { label: 'Maliyyə', icon: 'briefcase-outline', iconActive: 'briefcase' },
+  },
+  hr: {
+    lms: { label: 'İşçilər', icon: 'people-outline', iconActive: 'people' },
+    finance: { label: 'İşə qəbul', icon: 'megaphone-outline', iconActive: 'megaphone' },
   },
 };
 
@@ -152,6 +169,26 @@ export const roleDashboard: Record<Role, DashboardCfg> = {
     ],
     focus: 'approvals',
     attentionTitle: 'Bu ayın maaş icmalı',
+  },
+  hr: {
+    stats: [
+      { key: 'vacancies', label: 'Açıq vakansiya', value: String(hrStats.openVacancies), delta: 'işə qəbul', icon: 'briefcase', gradient: 'brand' },
+      { key: 'applications', label: 'Müraciət', value: String(hrStats.applications), delta: 'baxış gözləyir', icon: 'documents', gradient: 'purple' },
+      { key: 'active', label: 'Aktiv işçi', value: String(hrStats.activeEmployees), delta: 'kadr uçotu', icon: 'people', gradient: 'success' },
+      { key: 'onboarding', label: 'Qəbul prosesi', value: String(hrStats.onboarding), delta: 'davam edir', icon: 'person-add', gradient: 'gold' },
+    ],
+    actions: [
+      { key: 'vacancies', label: 'Vakansiyalar', icon: 'briefcase', route: '/hr/vacancies', tint: '#E02424', bg: '#FDE8E8' },
+      { key: 'applications', label: 'Müraciətlər', icon: 'documents', route: '/hr/applications', tint: '#3D4ED6', bg: '#E5E8FF' },
+      { key: 'employees', label: 'İşçilər', icon: 'people', route: '/hr/employees', tint: '#0E9F6E', bg: '#DEF7EC' },
+      { key: 'onboarding', label: 'Qəbul', icon: 'person-add', route: '/hr/employees', tint: '#C27803', bg: '#FDF6B2' },
+      { key: 'templates', label: 'Şablonlar', icon: 'copy', route: '/hr/templates', tint: '#7C3AED', bg: '#EDE9FE' },
+      { key: 'emails', label: 'E-poçt', icon: 'mail', route: '/hr/emails', tint: '#0EA5E9', bg: '#E0F2FE' },
+      { key: 'panel', label: 'HR paneli', icon: 'grid', route: '/hr', tint: '#5566F0', bg: '#EEF0FF' },
+      { key: 'chat', label: 'Mesajlar', icon: 'chatbubbles', route: '/messages', tint: '#F5A524', bg: '#FDEFD3' },
+    ],
+    focus: 'approvals',
+    attentionTitle: 'İşə qəbul icmalı',
   },
 };
 

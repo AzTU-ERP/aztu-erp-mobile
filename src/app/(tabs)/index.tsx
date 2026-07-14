@@ -8,6 +8,7 @@ import { HeaderIconButton, Hero, Screen } from '@/components/layout';
 import { Badge, Card, IconChip, ProgressBar, SectionHeader } from '@/components/ui';
 import { useRole } from '@/context/role';
 import { notifications, todaySchedule } from '@/data';
+import { applications, fullName, hrStats } from '@/data/hr';
 import { approvals, roleDashboard, roleMeta } from '@/data/roles';
 import { colors, gradients, radius, shadow, spacing, typography } from '@/theme';
 
@@ -16,6 +17,12 @@ export default function Dashboard() {
   const { role, profile, openSwitcher } = useRole();
   const cfg = roleDashboard[role];
   const unread = notifications.filter((n) => n.unread).length;
+
+  // HR role reuses the "approvals" focus slot to surface new applications.
+  const hrPending = applications
+    .filter((a) => a.status === 'submitted')
+    .map((a) => ({ id: a.id, title: fullName(a), detail: a.vacancyTitle, urgent: false }));
+  const focusList = role === 'hr' ? hrPending : approvals;
 
   return (
     <Screen>
@@ -130,15 +137,19 @@ export default function Dashboard() {
         </View>
       ) : (
         <View style={styles.section}>
-          <SectionHeader title="Təsdiq gözləyən" actionLabel="Hamısı" onAction={() => router.push('/finance/runs')} />
+          <SectionHeader
+            title={role === 'hr' ? 'Yeni müraciətlər' : 'Təsdiq gözləyən'}
+            actionLabel="Hamısı"
+            onAction={() => router.push(role === 'hr' ? '/hr/applications' : '/finance/runs')}
+          />
           <Card padded={false} style={{ overflow: 'hidden' }}>
-            {approvals.map((a, i) => (
+            {focusList.map((a, i) => (
               <View key={a.id}>
                 <View style={styles.schedRow}>
                   <IconChip
-                    icon={a.urgent ? 'alert-circle' : 'time'}
-                    color={a.urgent ? colors.danger : colors.info}
-                    bg={a.urgent ? '#FDE8E8' : '#E0F2FE'}
+                    icon={a.urgent ? 'alert-circle' : role === 'hr' ? 'document-text' : 'time'}
+                    color={a.urgent ? colors.danger : role === 'hr' ? colors.primary : colors.info}
+                    bg={a.urgent ? '#FDE8E8' : role === 'hr' ? '#E5E8FF' : '#E0F2FE'}
                     size={40}
                   />
                   <View style={{ flex: 1, marginLeft: spacing.md }}>
@@ -147,7 +158,7 @@ export default function Dashboard() {
                   </View>
                   {a.urgent ? <Badge label="Təcili" color={colors.danger} bg="#FDE8E8" /> : null}
                 </View>
-                {i < approvals.length - 1 ? <View style={styles.schedDivider} /> : null}
+                {i < focusList.length - 1 ? <View style={styles.schedDivider} /> : null}
               </View>
             ))}
           </Card>
@@ -161,15 +172,27 @@ export default function Dashboard() {
             <View style={{ flex: 1 }}>
               <Text style={styles.attTitle}>{cfg.attentionTitle}</Text>
               <Text style={styles.attSub}>
-                {role === 'finance' ? 'İyul 2026 · 412 əməkdaş' : '6 fənn üzrə orta göstərici'}
+                {role === 'finance'
+                  ? 'İyul 2026 · 412 əməkdaş'
+                  : role === 'hr'
+                    ? 'İşə qəbul dövrü · cari vəziyyət'
+                    : '6 fənn üzrə orta göstərici'}
               </Text>
             </View>
-            <Text style={styles.attPercent}>{role === 'finance' ? '984K ₼' : role === 'student' ? '94%' : '92%'}</Text>
+            <Text style={styles.attPercent}>
+              {role === 'finance' ? '984K ₼' : role === 'hr' ? String(hrStats.applications) : role === 'student' ? '94%' : '92%'}
+            </Text>
           </View>
           {role === 'finance' ? (
             <View style={styles.attLegend}>
               <Legend color={colors.success} label="Ödənilib 98%" />
               <Legend color={colors.warning} label="Gözləyir 2%" />
+            </View>
+          ) : role === 'hr' ? (
+            <View style={styles.attLegend}>
+              <Legend color={colors.success} label={`Aktiv ${hrStats.activeEmployees}`} />
+              <Legend color={colors.warning} label={`Qəbul ${hrStats.onboarding}`} />
+              <Legend color={colors.danger} label={`Vakansiya ${hrStats.openVacancies}`} />
             </View>
           ) : (
             <>
